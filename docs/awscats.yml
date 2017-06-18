@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: IsPorn
+  title: Cats
   description: | 
     This is a simple API to scan images for cats. The current implementation requires the image to be hosted via HTTP(S).
     Only images in jpeg and png that are less than 5MB in size are valid at this time. 

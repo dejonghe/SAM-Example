@@ -1,7 +1,7 @@
 global:
   region: us-east-1
-  release: '0.1.0'
-  lambda_dirs: [ lambda/form ]
+  release: '0.1.1'
+  lambda_dirs: [ lambda/cats ]
   sync_dirs: [ cloudformation, lambda, docs ]
   sync_exclude:
     - .swp

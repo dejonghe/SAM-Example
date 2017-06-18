@@ -45,7 +45,7 @@ Resources:
               -  
                 Effect: 'Allow'
                 Action: 
-                  - 'rekognition:DetectModerationLabels'
+                  - 'rekognition:DetectLabels'
                 Resource: '*'
 
   Cats:
@@ -56,11 +56,14 @@ Resources:
       CodeUri:
         Bucket: !Ref CloudToolsBucket
         Key: !Join [ '/', [ !Ref Release, !Ref AppArchive ] ]
-      FunctionName: IsItPorn
-      Description: 'Lambda receives API Gateway requests with a query string of a image URL to check if the image contains a male or female'
+      FunctionName: IsItACat
+      Description: 'Lambda receives API Gateway requests with a query string of a image URL to check if the image contains a cat or not.'
       MemorySize: 128
       Timeout: 10
       Role: !GetAtt [ CatsIAM, Arn ]
+      Environment:
+        Variables:
+          region: !Ref 'AWS::Region'
       Events:
         Scan:
           Type: Api

@@ -6,11 +6,12 @@ import boto3
 import requests
 import json
 import sys
+import os
 
 
 print('Loading function')
 
-session = boto3.session.Session(region_name='us-east-1')
+session = boto3.session.Session(region_name=os.environ['region'])
 rek = session.client('rekognition')
 
 def respond(status=200, res=None):
@@ -27,11 +28,6 @@ def lambda_handler(event, context):
     '''Demonstrates a simple HTTP endpoint using API Gateway. You have full
     access to the request and response payload, including headers and
     status code.
-
-    To scan a DynamoDB table, make a GET request with the TableName as a
-    query string parameter. To put, update, or delete an item, make a POST,
-    PUT, or DELETE request respectively, passing in the payload to the
-    DynamoDB API as a JSON body.
     '''
     print("Received event: " + json.dumps(event, indent=2))
 
@@ -44,40 +40,44 @@ def lambda_handler(event, context):
         payload = event['queryStringParameters']
         img_url = payload['img']
         img_format = img_url.split('.')[-1]
+
+        # Check if img query exists return 400 if not
         if img_url == '':
-            resp = { 'usage': 'isporn.codingforthecloud.com/?img=<HTTP Link> img must be png or jpg. JSON returned, { "porn": BOOL, "detail": "detail if is porn" }.' }
-            return respond(res=resp, status=400)
+            err_resp = { 'usage': 'cats.codingforthecloud.com/?img=<HTTP Link> img must be png or jpg. JSON returned, { "cats": BOOL, "confidence": "0.0%" }.' }
+            return respond(res=err_resp, status=400)
+ 
+        # Check if img extention is jpg or png return 415 if not (naive but good enough for who it's for)
         if img_format != 'jpg' and img_format != 'png':
-            resp = { 'error': 'Must be png or jpg'}
-            return respond(res=resp, status=415)
+            err_resp = { 'error': 'Must be png or jpg'}
+            return respond(res=err_resp, status=415)
+
+        # Download the image
         image = requests.get(img_url).content
+
+        # Check the image size to ensure it's less than 5MB return 413 if it's larger
         img_size = sys.getsizeof(image)
         if img_size > 5000000:
-            resp = { 'error': "Size must be less than 5MB your size is {0} Bytes.".format(str(img_size)) }
-            return respond(res=resp, status=413)
-        kog = rek.detect_moderation_labels(
+            err_resp = { 'error': "Size must be less than 5MB your size is {0} Bytes.".format(str(img_size)) }
+            return respond(res=err_resp, status=413)
+
+        # Send image to rekognition service
+        kog = rek.detect_labels(
             Image={
                 'Bytes':image
             }
         )
-        iteration = 0
-        if kog['ModerationLabels']:
-            for label in kog['ModerationLabels']:
-                if label['ParentName'] == 'Explicit Nudity':
-                    explicit = iteration
-                if label['ParentName'] == 'Suggestive':
-                    suggestive = iteration
-                iteration += 1
-        else:
-            resp = { 'porn': False, 'detail': None }
-        if 'explicit' in vars():
-            resp = { 'porn': True, 'detail': kog['ModerationLabels'][explicit]['Name'] }
-        elif 'suggestive' in vars():
-            resp = { 'porn': True, 'detail': kog['ModerationLabels'][suggestive]['Name'] }
+       
+        # Look for cats label 
+        for label in kog['Labels']:
+            if label['Name'] == 'Cat':
+                resp = { 'cats': True, "confidence": label['Confidence'] }
+        if 'resp' not in vars():
+            resp = { 'cats': False, "confidence": "90%" }
+        
+        # Return to client
         return respond(res=resp)
-
-        return respond(None, operations[operation](dynamo, payload))
     else:
+        # Return 405 if client used any method but GET
         return respond(status=405, res={"error":"Method Not Allowed"})
 
 if __name__ == "__main__":
