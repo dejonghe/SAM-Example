@@ -1,0 +1,47 @@
+swagger: "2.0"
+info:
+  title: IsPorn
+  description: | 
+    This is a simple API to scan images for cats. The current implementation requires the image to be hosted via HTTP(S).
+    Only images in jpeg and png that are less than 5MB in size are valid at this time. 
+  contact:
+    name: Mitten Development
+    email: mittendevelopment@gmail.com
+  version: 0.1.0
+paths:
+  /:
+    get:
+      description: Returns JSON detailing if image is of cats.
+      summary: Scan image for cats.
+      operationId: scanImage
+      produces:
+      - "application/json"
+      parameters:
+      - name: "img"
+        in: "query"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "200 response"
+        400:
+          description: Bad Request
+        413:
+          description: Image too large
+        415:
+          description: Wrong format
+      x-amazon-apigateway-request-validator: "Validate query string parameters and\
+        \ headers"
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: "200"
+        uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:650735925370:function:${stageVariables.LambdaFunctionName}/invocations
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        contentHandling: "CONVERT_TO_TEXT"
+        type: "aws_proxy"
+x-amazon-apigateway-request-validators:
+  Validate query string parameters and headers:
+    validateRequestParameters: true
+    validateRequestBody: false

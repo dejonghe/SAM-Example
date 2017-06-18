@@ -1,0 +1,29 @@
+global:
+  region: us-east-1
+  release: '0.1.0'
+  lambda_dirs: [ lambda/form ]
+  sync_dirs: [ cloudformation, lambda, docs ]
+  sync_exclude:
+    - .swp
+    - .git
+    - .py
+    - .txt
+  sync_base: ./
+  sync_dest_bucket: derekslab-us-east-1
+  template_bucket: derekslab-us-east-1
+  tags:
+    Project: Cats
+    Environment: Dev
+    Release : '0.1.0'
+ 
+  
+Cats:
+  stack_name: CatsApi
+  transforms: true
+  change_prefix: Cats
+  template: cloudformation/cats/cats.yml 
+  parameters:
+    AppArchive: lambda/cats.zip
+    CloudToolsBucket: derekslab-us-east-1
+    Environment: Dev
+    SwaggerDoc: docs/awscats.yml
