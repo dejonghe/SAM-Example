@@ -1,5 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
+
 Transform: 'AWS::Serverless-2016-10-31'
+
 Parameters:
   AppArchive:
     Type: String
@@ -10,12 +12,10 @@ Parameters:
   Environment:
     Type: String
     Description: 'Environment'
-  Release:
-    Type: String
-    Description: 'Release Version'
   SwaggerDoc:
     Type: String
     Description: 'Swagger documentation file'
+
 Resources:
   CatsIAM:
     Type: 'AWS::IAM::Role'
@@ -55,7 +55,7 @@ Resources:
       Runtime: python3.6
       CodeUri:
         Bucket: !Ref CloudToolsBucket
-        Key: !Join [ '/', [ !Ref Release, !Ref AppArchive ] ]
+        Key: !Ref AppArchive
       FunctionName: IsItACat
       Description: 'Lambda receives API Gateway requests with a query string of a image URL to check if the image contains a cat or not.'
       MemorySize: 128
@@ -78,8 +78,9 @@ Resources:
       StageName: !Ref Environment
       DefinitionUri:
         Bucket: !Ref CloudToolsBucket
-        Key: !Join [ '/', [ !Ref Release, !Ref SwaggerDoc ] ]
+        Key: !Ref SwaggerDoc
       Variables:
         LambdaFunctionName: !Ref Cats
         Region: !Ref AWS::Region
         AccountId: !Ref AWS::AccountId
+
