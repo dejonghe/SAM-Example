@@ -9,7 +9,7 @@ Before you jump head first into SAM you need code for Lambda to run. Code for La
 * You have an AWS Account.
 * You’re using Bash.
 * You have pip installed
-* You're the AWS CLI installed, preferred version 1.10.x or greater. [Help](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+* You're the AWS CLI installed, preferred version 1.11.108 or greater. [Help](http://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 * You have configured the CLI, set up AWS IAM access credentials. [Help](http://docs.aws.amazon.com/cli/latest/reference/configure/index.html)
 
 ### Step 1: Create a S3 Bucket.
@@ -37,10 +37,10 @@ Script 2: s3_sync.sh, this script will sync all the necessary files to your S3 b
 ./scripts/s3_sync.sh -b sam_example_{yourName}
 ```
 ### Step 5: Create the CloudFormation Stack.
-This is the final step in the demonstration, the following command sets the stack name to sam-example. The template url is specified, you will need to modify this to point at your own bucket. The parameters come next, the AppArchive parameter is the path to the code archive within your bucket and is already configured based on the scripts ran earlier. The next parameter is the CloudToolsBucket parameter this is the name of your bucket. The Environment parameter is used to create a stage name for your API. Lastly we have the SwaggerDoc parameter this is the path to the Swagger Document and is predefined based on the scripts ran earlier. After this you must provide IAM capabilities to this CloudFormation stack because we must create an IAM role for the lambda function to run.
+This is the final step in the demonstration, the following command creates and executes a change set from the template specified and sets the stack name to sam-example. The parameters come next, the AppArchive parameter is the path to the code archive within your bucket and is already configured based on the scripts ran earlier. The next parameter is the CloudToolsBucket parameter this is the name of your bucket. The Environment parameter is used to create a stage name for your API. Lastly we have the SwaggerDoc parameter this is the path to the Swagger Document and is predefined based on the scripts ran earlier. After this you must provide IAM capabilities to this CloudFormation stack because we must create an IAM role for the lambda function to run.
 
 ```
-aws cloudformation create-stack --stack-name sam-example --template-url https://s3.amazonaws.com/sam_example_{yourName}/cats/cats.yml --parameters ParameterKey=AppArchive,ParameterValue=builds/cats.zip ParameterKey=CloudToolsBucket,ParameterValue=extend_cfn_example_{yourName} ParameterKey=Environment,ParameterValue=Dev ParameterKey=SwaggerDoc,ParameterValue=docs/awscats.yml --capabilities CAPABILITY_IAM
+aws cloudformation deploy --template-file cloudformation/cats.yml --stack-name sam-example --parameter-overrides AppArchive=builds/cats.zip CloudToolsBucket=sam_example_{Your_Name} Environment=Dev SwaggerDoc=docs/awscats.yml --capabilities CAPABILITY_IAM
 ```
 
 Wait for the CloudFormation stack to complete and then check in on the AWS Gateway, it will have a URL for you to use to hit your new API. This concludes the demonstration.
