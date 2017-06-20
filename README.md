@@ -34,13 +34,13 @@ Script 1: build_lambdas.sh, this script will utilize pip to install the required
 Script 2: s3_sync.sh, this script will sync all the necessary files to your S3 bucket. The files it syncs are the builds and cloudformation directories.
 
 ```
-./scripts/s3_sync.sh -b sam_example_{yourName}
+./scripts/s3_sync.sh -b sam_example_{yourName} (-p Optional_Profile)
 ```
 ### Step 5: Create the CloudFormation Stack.
 This is the final step in the demonstration, the following command creates and executes a change set from the template specified and sets the stack name to sam-example. The parameters come next, the AppArchive parameter is the path to the code archive within your bucket and is already configured based on the scripts ran earlier. The next parameter is the CloudToolsBucket parameter this is the name of your bucket. The Environment parameter is used to create a stage name for your API. Lastly we have the SwaggerDoc parameter this is the path to the Swagger Document and is predefined based on the scripts ran earlier. After this you must provide IAM capabilities to this CloudFormation stack because we must create an IAM role for the lambda function to run.
 
 ```
-aws cloudformation deploy --template-file cloudformation/cats.yml --stack-name sam-example --parameter-overrides AppArchive=builds/cats.zip CloudToolsBucket=sam_example_{Your_Name} Environment=Dev SwaggerDoc=docs/awscats.yml --capabilities CAPABILITY_IAM
+aws cloudformation deploy --template-file cloudformation/cats.yml --stack-name sam-example --parameter-overrides AppArchive=builds/cats.zip CloudToolsBucket=sam_example_{yourName} Environment=Dev SwaggerDoc=docs/awscats.yml --capabilities CAPABILITY_IAM
 ```
 
 Wait for the CloudFormation stack to complete and then check in on the AWS Gateway, it will have a URL for you to use to hit your new API. This concludes the demonstration.
