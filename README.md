@@ -31,7 +31,7 @@ Script 1: build_lambdas.sh, this script will utilize pip to install the required
 ```
 ./scripts/build_lambdas.sh
 ```
-Script 2: s3_sync.sh, this script will sync all the necessary files to your S3 bucket. The files it syncs are the builds and cloudformation directories.
+Script 2: s3_sync.sh, this script will sync all the necessary files to your S3 bucket. The files it syncs are the builds and cloudformation directories. This script also uses the AWS CLI to look for the region and account number you're using with the given profile and templates the swagger document because there's no way to template these values in the ARN for the x-amazon-apigateway-integration uri. 
 
 ```
 ./scripts/s3_sync.sh -b sam_example_{yourName} (-p Optional_Profile)
