@@ -73,6 +73,7 @@ Resources:
             RestApiId: !Ref CatsApi
 
   CatsApi:
+    DependsOn: Cats
     Type: 'AWS::Serverless::Api'
     Properties:
       StageName: !Ref Environment
@@ -80,7 +81,10 @@ Resources:
         Bucket: !Ref CloudToolsBucket
         Key: !Ref SwaggerDoc
       Variables:
-        LambdaFunctionName: !Ref Cats
-        Region: !Ref AWS::Region
-        AccountId: !Ref AWS::AccountId
+        LambdaName: !Ref Cats
+        Region: !Ref 'AWS::Region'
+        IntegrationUri: !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', ':lambda:path/2015-03-31/functions/arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':function:', !Ref Cats, '/invocations' ] ]
 
+Outputs:
+  IntegrationUri: 
+    Value: !Join [ '', [ 'arn:aws:apigateway:', !Ref 'AWS::Region', ':lambda:path/2015-03-31/functions/arn:aws:lambda:', !Ref 'AWS::Region', ':', !Ref 'AWS::AccountId', ':function:', !Ref Cats, '/invocations' ] ]

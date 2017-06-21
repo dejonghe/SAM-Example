@@ -31,13 +31,16 @@ while getopts "p:r:b:" opt; do
     ;;
   esac
 done
+
+REGION=$(aws configure list --profile ${PROFILE} | grep region | awk '{print $2}')
+ACCOUNT_ID=$(aws ec2 describe-security-groups --query 'SecurityGroups[0].OwnerId' --output text)
 CWD=$(echo $PWD | rev | cut -d'/' -f1 | rev)
 if [ $CWD != "SAM-Example" ]
 then
   echo "These tools are expecting to be ran from the base of the SAM-Example repo."
   exit 1
 fi
-
-aws s3 sync ./builds/ s3://$BUCKET/builds/ --profile $PROFILE --exclude *.git/* --exclude *.swp
-aws s3 sync ./cloudformation/ s3://$BUCKET/cloudformation/ --profile $PROFILE --exclude *.git/* --exclude *.swp
-aws s3 sync ./docs/ s3://$BUCKET/docs/ --profile $PROFILE --exclude *.git/* --exclude *.swp 
+sed -i "s/<region>/${REGION}/g" docs/awscats.yml
+sed -i "s/<account_id>/${ACCOUNT_ID}/g" docs/awscats.yml
+aws s3 sync ./builds/ s3://${BUCKET}/builds/ --profile ${PROFILE} --exclude *.git/* --exclude *.swp
+aws s3 sync ./docs/ s3://${BUCKET}/docs/ --profile ${PROFILE} --exclude *.git/* --exclude *.swp 
