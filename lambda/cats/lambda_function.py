@@ -72,7 +72,7 @@ def lambda_handler(event, context):
             if label['Name'] == 'Cat':
                 resp = { 'cats': True, "confidence": label['Confidence'] }
         if 'resp' not in vars():
-            resp = { 'cats': False, "confidence": "90%" }
+            resp = { 'cats': False, "confidence": 98 }
         
         # Return to client
         return respond(res=resp)
