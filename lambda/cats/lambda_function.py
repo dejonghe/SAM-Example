@@ -72,7 +72,7 @@ def lambda_handler(event, context):
             if label['Name'] == 'Cat':
                 resp = { 'cats': { 'isACat': True, "confidence": label['Confidence'] } }
         if 'resp' not in vars():
-            resp = { 'cats': { 'isACat': False, "confidence": "90%" } }
+            resp = { 'cats': { 'isACat': False, "confidence": 98 } }
 
         kog = rek.recognize_celebrities(
             Image={
