@@ -46,6 +46,7 @@ Resources:
                 Effect: 'Allow'
                 Action: 
                   - 'rekognition:DetectLabels'
+                  - 'rekognition:RecognizeCelebrities'
                 Resource: '*'
 
   Cats:

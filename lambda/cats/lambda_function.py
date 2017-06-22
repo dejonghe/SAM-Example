@@ -70,9 +70,17 @@ def lambda_handler(event, context):
         # Look for cats label 
         for label in kog['Labels']:
             if label['Name'] == 'Cat':
-                resp = { 'cats': True, "confidence": label['Confidence'] }
+                resp = { 'cats': { 'isACat': True, "confidence": label['Confidence'] } }
         if 'resp' not in vars():
-            resp = { 'cats': False, "confidence": "90%" }
+            resp = { 'cats': { 'isACat': False, "confidence": "90%" } }
+
+        kog = rek.recognize_celebrities(
+            Image={
+                'Bytes':image
+            }
+        )
+        for celeb in kog['CelebrityFaces']:
+            resp.setdefault('celebs', []).append({ 'celeb': celeb['Name'], 'confidence': celeb['MatchConfidence']}) 
         
         # Return to client
         return respond(res=resp)
